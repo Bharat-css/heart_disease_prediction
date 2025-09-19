@@ -9,6 +9,9 @@
 ### 🔹 Heart Disease Prediction App
 I built and deployed a Machine Learning model having 94% accuracy, that predicts the chance of heart disease using 14 input features.  
 
+
+i have used render's free web service platform to deploy this model, which is live for only 15 minutes. It is possible that link provided below of demo may not work.
+
 👉 **[Live Demo on Render](https://heart-disease-prediction-k0qo.onrender.com)**  
 👉 **[Source Code](https://github.com/Bharat-css/heart_disease_prediction)**  
 
