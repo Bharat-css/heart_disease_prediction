@@ -15,7 +15,7 @@ i have used render's free web service platform to deploy this model, which is li
 👉 **[Live Demo on Render](https://heart-disease-prediction-k0qo.onrender.com)**  
 👉 **[Source Code](https://github.com/Bharat-css/heart_disease_prediction)**  
 
-![App Screenshot](https://github.com/Bharat-css/heart_disease_prediction/tree/master/screenshorts)
+![App Screenshot](https://github.com/Bharat-css/heart_disease_prediction/blob/master/screenshorts/Screenshot%202025-09-19%20123640.png)
 
 ---
 
