@@ -16,6 +16,7 @@ i have used render's free web service platform to deploy this model, which is li
 👉 **[Source Code](https://github.com/Bharat-css/heart_disease_prediction)**  
 
 ![App Screenshot](https://github.com/Bharat-css/heart_disease_prediction/blob/master/screenshorts/Screenshot%202025-09-19%20123640.png)
+![](https://github.com/Bharat-css/heart_disease_prediction/blob/master/screenshorts/Screenshot%202025-09-19%20123720.png)
 
 ---
 
