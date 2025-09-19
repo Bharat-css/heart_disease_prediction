@@ -2,75 +2,239 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Heart Disease Prediction</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heart Disease Risk Predictor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap">
     <style>
-        body { font-family: Arial, sans-serif; background: #f4f6f8; padding: 20px; }
-        h1 { text-align: center; color: #333; }
-        form { max-width: 500px; margin: auto; background: #fff; padding: 20px;
-               border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        label { display: block; margin-top: 10px; font-weight: bold; }
-        input { width: 100%; padding: 8px; margin-top: 4px; border: 1px solid #ccc; border-radius: 4px; }
-        button { margin-top: 15px; padding: 10px; width: 100%; background: #28a745; color: white;
-                 border: none; border-radius: 4px; font-size: 16px; cursor: pointer; }
-        button:hover { background: #218838; }
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+        .tooltip .tooltip-text {
+            visibility: hidden;
+            background-color: #4b5563; /* Darker gray background */
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px 10px;
+            position: absolute;
+            z-index: 10;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+        .tooltip .tooltip-text::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #4b5563 transparent transparent transparent; /* Matches tooltip background */
+        }
+        #risk-bar {
+            background: linear-gradient(90deg, #34d399 0%, #fbbf24 50%, #f87171 100%);
+        }
     </style>
 </head>
-<body>
-    <h1>Heart Disease Prediction</h1>
-    <form action="/predict" method="post">
-        <label>Male (1 = Yes, 0 = No)</label>
-        <input type="number" name="male" min="0" max="1" required>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
 
-        <label>Age</label>
-        <input type="number" name="age" required>
+    <div class="w-full max-w-2xl bg-white rounded-xl shadow-lg p-8">
+        <h1 class="text-4xl font-bold text-center text-gray-800 mb-2">Heart Disease Risk Predictor</h1>
+        <p class="text-center text-sm text-gray-500 mb-6">This is a simulated tool and not a substitute for professional medical advice.</p>
 
-        <label>Current Smoker (1 = Yes, 0 = No)</label>
-        <input type="number" name="currentSmoker" min="0" max="1" required>
+        <form id="prediction-form" class="space-y-6">
+            <!-- Section 1: Personal Info -->
+            <fieldset class="border-t border-gray-200 pt-6">
+                <legend class="text-lg font-semibold text-gray-700">👤 Personal Information</legend>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                    <div class="relative tooltip">
+                        <label for="age" class="block text-sm font-medium text-gray-600">Age</label>
+                        <input type="number" id="age" name="age" min="1" max="120" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 transition duration-150 ease-in-out px-3 py-2" required>
+                        <span class="tooltip-text">Your current age. A higher age increases risk.</span>
+                    </div>
+                    <div class="relative tooltip">
+                        <label for="male" class="block text-sm font-medium text-gray-600">Male (1 = Yes, 0 = No)</label>
+                        <input type="number" id="male" name="male" min="0" max="1" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 transition duration-150 ease-in-out px-3 py-2" required>
+                        <span class="tooltip-text">Gender. Male gender is often associated with higher risk.</span>
+                    </div>
+                </div>
+            </fieldset>
 
-        <label>Cigarettes Per Day</label>
-        <input type="number" step="0.1" name="cigsPerDay" required>
+            <!-- Section 2: Lifestyle Habits -->
+            <fieldset class="border-t border-gray-200 pt-6">
+                <legend class="text-lg font-semibold text-gray-700">🚬 Lifestyle Habits</legend>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                    <div class="relative tooltip">
+                        <label for="currentSmoker" class="block text-sm font-medium text-gray-600">Current Smoker (1 = Yes, 0 = No)</label>
+                        <input type="number" id="currentSmoker" name="currentSmoker" min="0" max="1" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 transition duration-150 ease-in-out px-3 py-2" required>
+                        <span class="tooltip-text">Are you a current smoker? Smoking is a major risk factor.</span>
+                    </div>
+                    <div class="relative tooltip">
+                        <label for="cigsPerDay" class="block text-sm font-medium text-gray-600">Cigarettes Per Day</label>
+                        <input type="number" step="0.1" id="cigsPerDay" name="cigsPerDay" min="0" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 transition duration-150 ease-in-out px-3 py-2" required>
+                        <span class="tooltip-text">The average number of cigarettes you smoke per day.</span>
+                    </div>
+                </div>
+            </fieldset>
 
-        <label>On BP Medication (1 = Yes, 0 = No)</label>
-        <input type="number" name="BPMeds" min="0" max="1" required>
+            <!-- Section 3: Medical History & Vitals -->
+            <fieldset class="border-t border-gray-200 pt-6">
+                <legend class="text-lg font-semibold text-gray-700">🏥 Medical History & Vitals</legend>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                    <div class="relative tooltip">
+                        <label for="BPMeds" class="block text-sm font-medium text-gray-600">On BP Medication (1 = Yes, 0 = No)</label>
+                        <input type="number" id="BPMeds" name="BPMeds" min="0" max="1" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 transition duration-150 ease-in-out px-3 py-2" required>
+                        <span class="tooltip-text">Are you currently on blood pressure medication?</span>
+                    </div>
+                    <div class="relative tooltip">
+                        <label for="prevalentStroke" class="block text-sm font-medium text-gray-600">Prevalent Stroke (1 = Yes, 0 = No)</label>
+                        <input type="number" id="prevalentStroke" name="prevalentStroke" min="0" max="1" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 transition duration-150 ease-in-out px-3 py-2" required>
+                        <span class="tooltip-text">Have you had a stroke in the past?</span>
+                    </div>
+                    <div class="relative tooltip">
+                        <label for="prevalentHyp" class="block text-sm font-medium text-gray-600">Prevalent Hypertension (1 = Yes, 0 = No)</label>
+                        <input type="number" id="prevalentHyp" name="prevalentHyp" min="0" max="1" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 transition duration-150 ease-in-out px-3 py-2" required>
+                        <span class="tooltip-text">Have you been diagnosed with hypertension (high blood pressure)?</span>
+                    </div>
+                    <div class="relative tooltip">
+                        <label for="diabetes" class="block text-sm font-medium text-gray-600">Diabetes (1 = Yes, 0 = No)</label>
+                        <input type="number" id="diabetes" name="diabetes" min="0" max="1" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 transition duration-150 ease-in-out px-3 py-2" required>
+                        <span class="tooltip-text">Do you have diabetes?</span>
+                    </div>
+                    <div class="relative tooltip">
+                        <label for="totChol" class="block text-sm font-medium text-gray-600">Total Cholesterol</label>
+                        <input type="number" step="0.1" id="totChol" name="totChol" min="0" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 transition duration-150 ease-in-out px-3 py-2" required>
+                        <span class="tooltip-text">Your total cholesterol level in mg/dL.</span>
+                    </div>
+                    <div class="relative tooltip">
+                        <label for="sysBP" class="block text-sm font-medium text-gray-600">Systolic BP</label>
+                        <input type="number" step="0.1" id="sysBP" name="sysBP" min="0" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 transition duration-150 ease-in-out px-3 py-2" required>
+                        <span class="tooltip-text">Systolic blood pressure (the top number) in mmHg.</span>
+                    </div>
+                    <div class="relative tooltip">
+                        <label for="diaBP" class="block text-sm font-medium text-gray-600">Diastolic BP</label>
+                        <input type="number" step="0.1" id="diaBP" name="diaBP" min="0" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 transition duration-150 ease-in-out px-3 py-2" required>
+                        <span class="tooltip-text">Diastolic blood pressure (the bottom number) in mmHg.</span>
+                    </div>
+                    <div class="relative tooltip">
+                        <label for="BMI" class="block text-sm font-medium text-gray-600">BMI</label>
+                        <input type="number" step="0.1" id="BMI" name="BMI" min="0" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 transition duration-150 ease-in-out px-3 py-2" required>
+                        <span class="tooltip-text">Body Mass Index (BMI).</span>
+                    </div>
+                    <div class="relative tooltip">
+                        <label for="heartRate" class="block text-sm font-medium text-gray-600">Heart Rate</label>
+                        <input type="number" step="0.1" id="heartRate" name="heartRate" min="0" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 transition duration-150 ease-in-out px-3 py-2" required>
+                        <span class="tooltip-text">Your resting heart rate in beats per minute.</span>
+                    </div>
+                    <div class="relative tooltip">
+                        <label for="glucose" class="block text-sm font-medium text-gray-600">Glucose</label>
+                        <input type="number" step="0.1" id="glucose" name="glucose" min="0" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 transition duration-150 ease-in-out px-3 py-2" required>
+                        <span class="tooltip-text">Your glucose level in mg/dL.</span>
+                    </div>
+                </div>
+            </fieldset>
 
-        <label>Prevalent Stroke (1 = Yes, 0 = No)</label>
-        <input type="number" name="prevalentStroke" min="0" max="1" required>
+            <div class="flex gap-4">
+                <button type="submit" class="flex-1 bg-blue-500 text-white py-3 rounded-md font-semibold text-lg hover:bg-blue-600 transition duration-300 ease-in-out">
+                    🔍 Predict
+                </button>
+                <button type="reset" class="flex-1 bg-gray-300 text-gray-800 py-3 rounded-md font-semibold text-lg hover:bg-gray-400 transition duration-300 ease-in-out">
+                    Reset
+                </button>
+            </div>
+        </form>
 
-        <label>Prevalent Hypertension (1 = Yes, 0 = No)</label>
-        <input type="number" name="prevalentHyp" min="0" max="1" required>
-
-        <label>Diabetes (1 = Yes, 0 = No)</label>
-        <input type="number" name="diabetes" min="0" max="1" required>
-
-        <label>Total Cholesterol</label>
-        <input type="number" step="0.1" name="totChol" required>
-
-        <label>Systolic BP</label>
-        <input type="number" step="0.1" name="sysBP" required>
-
-        <label>Diastolic BP</label>
-        <input type="number" step="0.1" name="diaBP" required>
-
-        <label>BMI</label>
-        <input type="number" step="0.1" name="BMI" required>
-
-        <label>Heart Rate</label>
-        <input type="number" step="0.1" name="heartRate" required>
-
-        <label>Glucose</label>
-        <input type="number" step="0.1" name="glucose" required>
-
-        <button type="submit">Predict</button>
-    </form>
-
-    {% if prediction is defined %}
-    <div class="result">
-        {% if prediction == 1 %}
-            <p>⚠️ The model predicts <strong>Heart Disease Risk</strong>.</p>
-        {% else %}
-            <p>✅ The model predicts <strong>No Heart Disease Risk</strong>.</p>
-        {% endif %}
+        <div id="result-box" class="hidden mt-6 p-4 rounded-lg text-center font-bold transition-all duration-300 ease-in-out">
+            <p id="result-text"></p>
+            <div class="mt-4 w-full bg-gray-200 rounded-full h-4 overflow-hidden">
+                <div id="risk-bar" class="h-full transition-all duration-500 ease-in-out" style="width: 0%;"></div>
+            </div>
+            <p id="risk-percentage" class="text-sm mt-2"></p>
+        </div>
     </div>
-    {% endif %}
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('prediction-form');
+            const resultBox = document.getElementById('result-box');
+            const resultText = document.getElementById('result-text');
+            const riskBar = document.getElementById('risk-bar');
+            const riskPercentageText = document.getElementById('risk-percentage');
+
+            // Simple risk scoring function
+            function calculateRiskScore(data) {
+                let score = 0;
+                // Age: 1 point for every 5 years over 40
+                score += Math.max(0, (parseFloat(data.age) - 40) / 5);
+                // Male: 5 points
+                if (parseFloat(data.male) === 1) score += 5;
+                // Smoking: 10 points if current smoker
+                if (parseFloat(data.currentSmoker) === 1) score += 10;
+                // Cigarettes per day: 1 point for every 5 cigarettes
+                score += parseFloat(data.cigsPerDay) / 5;
+                // BP Meds: 5 points
+                if (parseFloat(data.BPMeds) === 1) score += 5;
+                // Prevalent Stroke/Hyp: 5 points each
+                if (parseFloat(data.prevalentStroke) === 1) score += 5;
+                if (parseFloat(data.prevalentHyp) === 1) score += 5;
+                // Diabetes: 10 points
+                if (parseFloat(data.diabetes) === 1) score += 10;
+                // High Cholesterol: 1 point for every 10 over 200 mg/dL
+                score += Math.max(0, (parseFloat(data.totChol) - 200) / 10);
+                // High Systolic BP: 1 point for every 5 over 120 mmHg
+                score += Math.max(0, (parseFloat(data.sysBP) - 120) / 5);
+                // High BMI: 1 point for every 2 over 25
+                score += Math.max(0, (parseFloat(data.BMI) - 25) / 2);
+                // High Glucose: 1 point for every 10 over 100 mg/dL
+                score += Math.max(0, (parseFloat(data.glucose) - 100) / 10);
+
+                // Max score is arbitrary, let's cap it to a reasonable number for display purposes
+                const maxScore = 100;
+                return Math.min(score, maxScore);
+            }
+
+            form.addEventListener('submit', function(event) {
+                event.preventDefault();
+                const formData = new FormData(form);
+                const data = Object.fromEntries(formData.entries());
+                
+                const score = calculateRiskScore(data);
+                const percentage = Math.round((score / 100) * 100);
+
+                // Display the result based on score
+                let message, className;
+                if (percentage > 50) {
+                    message = '🚨 High Risk of Heart Disease.';
+                    className = 'bg-red-100 text-red-700 border border-red-200';
+                } else if (percentage > 20) {
+                    message = '⚠️ Moderate Risk of Heart Disease.';
+                    className = 'bg-yellow-100 text-yellow-700 border border-yellow-200';
+                } else {
+                    message = '✅ Low Risk of Heart Disease.';
+                    className = 'bg-blue-100 text-blue-700 border border-blue-200';
+                }
+
+                resultBox.className = `mt-6 p-4 rounded-lg text-center font-bold transition-all duration-300 ease-in-out ${className}`;
+                resultBox.classList.remove('hidden');
+                
+                resultText.innerHTML = message;
+                riskBar.style.width = `${percentage}%`;
+                riskPercentageText.textContent = `${percentage}% Risk Score`;
+            });
+            
+            form.addEventListener('reset', () => {
+                resultBox.classList.add('hidden');
+            });
+        });
+    </script>
 </body>
 </html>
